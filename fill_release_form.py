@@ -1,10 +1,11 @@
 import csv
 import io
 import re
-import pdfrw
-from reportlab.pdfgen import canvas
 import sys
 import os
+import pdfrw
+from reportlab.pdfgen import canvas
+
 
 def get_emergency_contact(contact):
     contact = contact.replace('\n', ' ')
@@ -12,6 +13,7 @@ def get_emergency_contact(contact):
         contact = re.sub('[()-]', '', contact)
 
     return contact
+
 
 def get_overlay_canvas(participants):
     data = io.BytesIO()
@@ -44,21 +46,6 @@ def save(form, filename):
         f.write(form.read())
 
 
-participant_name_x = 65
-emergency_contact_x = 400
-y_start = 215
-y_increment = 17
-chunk_size = 10
-
-release_pdf = 'release.pdf'
-filled_release_base = 'release_filled_'
-csv_file = '1668.csv'
-
-release_pdf = sys.argv[1]
-csv_file = sys.argv[2]
-filled_release_base = os.path.splitext(release_pdf)[0] + '_filled_'
-
-
 def get_approved_participants(csv_file):
     with open(csv_file) as csvfile:
         reader = csv.DictReader(csvfile)
@@ -77,7 +64,16 @@ def generate_pdfs(approved_participants, chunk_size):
         canvas_data = get_overlay_canvas(participants)
         form = merge(canvas_data, template_path=release_pdf)
         save(form, filename=filled_release_pdf)
+        
+        
+participant_name_x = 65
+emergency_contact_x = 400
+y_start = 215
+y_increment = 17
+chunk_size = 10
 
+release_pdf = sys.argv[1]
+csv_file = sys.argv[2]
+filled_release_base = os.path.splitext(release_pdf)[0] + '_filled_'
 
 generate_pdfs(get_approved_participants(csv_file), chunk_size)
-
