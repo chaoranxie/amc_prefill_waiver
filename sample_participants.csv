@@ -1,0 +1,6 @@
+NAME,REGISTER DATE,REGISTER STATUS,EMAIL,CELL,DAY,EVENING,EMERGENCY CONTACT,MEDICAL,DIET,GEAR,NEED RIDE,CAN TAKE,LEAVING FROM,RETURNING TO,NOTES
+John Doe,2017-10-18 20:21:54,LEADER,john.doe@example.com,111-222-3333,111-222-3333,111-222-3333,Maple Schmeling (wife) h:111-222-333; m:444-555-6666,None,None,Yes,N,0,Boston ,Boston ,
+Jane Doe,2017-11-09 03:07:28,APPROVED,john.doe@example.com,111-222-3333,111-222-3333,111-222-3333,"Tiffanie Cutting (mother), 555-666-7777",None,None,Yes,N,0,Boston ,Boston ,
+Gaynell Wingard,2017-11-09 03:18:55,CO-LEADER,john.doe@example.com,111-222-3333,111-222-3333,111-222-3333,"Nita Blum (999) 888-6666 (sister)
+Danille Acre 333-444-5555 (sister)",None,None,Yes,N,0,Boston ,Boston ,
+Charley Siddall,2017-11-15 16:21:01,APPROVED,john.doe@example.com,111-222-3333,111-222-3333,111-222-3333,Refugia Colunga 666-777-8888,None,None,Yes,N,0,Boston ,Boston ,
