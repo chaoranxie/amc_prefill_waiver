@@ -7,7 +7,7 @@ from flask import send_file
 from flask import render_template
 from flask import request, redirect, flash
 
-from fill_release_form import generate_pdfs_data, chunk_size, get_approved_participants
+from prefill_waiver import generate_pdfs_data, chunk_size, get_approved_participants
 
 app = Flask(__name__)
 app.secret_key = os.environ['SECRET_KEY']
@@ -36,8 +36,7 @@ def home():
         if file and allowed_file(file.filename):
             participants = get_approved_participants(file.stream)
             file_contents = generate_pdfs_data(
-                release_pdf='static/release_form.pdf', approved_participants=participants, filled_release_base="release_form_filled_", chunk_size=chunk_size)
-
+                waiver_pdf='static/waiver.pdf', approved_participants=participants, filled_waiver_base="filled_waiver_", chunk_size=chunk_size)
             in_memory = StringIO()
             zip = zipfile.ZipFile(in_memory, "a")
             for filename, content in file_contents.items():
@@ -47,7 +46,7 @@ def home():
             zip.close()
             in_memory.seek(0)
             return send_file(in_memory,
-                             attachment_filename='releases.zip',
+                             attachment_filename='filled_waivers.zip',
                              as_attachment=True)
         else:
             flash('Invalid file')

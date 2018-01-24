@@ -8,9 +8,10 @@ from reportlab.pdfgen import canvas
 
 
 def get_emergency_contact(contact):
-    contact = contact.replace('\n', ' ')
+    contact = re.sub(',|;|wife|\n|Mother|Roomate|\.|:|sister|parents', '', contact)
+    # contact = re.sub('-|\(|\)|,|;|wife|\n|Mother|Roomate|\.|:|sister|parents', '', contact)
     if len(contact) >= 35:
-        contact = re.sub('[()-]', '', contact)
+        return ""
     return contact
 
 
@@ -53,15 +54,15 @@ def get_approved_participants(csvfile):
     return approved_participants
 
 
-def generate_pdfs_data(release_pdf, approved_participants, filled_release_base, chunk_size):
+def generate_pdfs_data(waiver_pdf, approved_participants, filled_waiver_base, chunk_size):
     data = {}
     for i in range(0, len(approved_participants), chunk_size):
         chunk_index = i / chunk_size + 1
-        filled_release_pdf = filled_release_base + str(chunk_index) + ".pdf"
+        filled_waiver_pdf = filled_waiver_base + str(chunk_index) + ".pdf"
         participants = approved_participants[i:i + chunk_size]
         canvas_data = get_overlay_canvas(participants)
-        form = merge(canvas_data, template_path=release_pdf)
-        data[filled_release_pdf] = form.read()
+        form = merge(canvas_data, template_path=waiver_pdf)
+        data[filled_waiver_pdf] = form.read()
     return data
 
 participant_name_x = 65
@@ -71,12 +72,12 @@ y_increment = 17
 chunk_size = 10
 
 def main():
-    release_pdf = sys.argv[1]
+    waiver_pdf = sys.argv[1]
     csv_file = sys.argv[2]
-    filled_release_base = os.path.splitext(release_pdf)[0] + '_filled_'
+    filled_waiver_base = os.path.splitext(waiver_pdf)[0] + '_filled_'
     participants = get_approved_participants(open(csv_file))
-    file_contents = generate_pdfs_data(release_pdf,
-        participants, filled_release_base, chunk_size)
+    file_contents = generate_pdfs_data(waiver_pdf,
+        participants, filled_waiver_base, chunk_size)
     for filename, content in file_contents.items():
         save(filename, content)
     
