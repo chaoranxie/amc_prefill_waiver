@@ -12,7 +12,7 @@ pip install -r requirements.txt
 ```
 click `Export to Tab Delimited` on the Roster page on regi
 ```
-## Fill release form
+## Prefill waiver
 ```
 python prefill_waiver.py static/waiver.pdf static/sample_participants.csv
 ```
