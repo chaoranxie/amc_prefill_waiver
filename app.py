@@ -10,6 +10,8 @@ from flask import request, redirect, flash
 from fill_release_form import generate_pdfs_data, chunk_size, get_approved_participants
 
 app = Flask(__name__)
+app.secret_key = os.environ['SECRET_KEY']
+
 ALLOWED_EXTENSIONS = set(['csv'])
 
 
@@ -55,5 +57,4 @@ def home():
 
 
 if __name__ == '__main__':
-    app.secret_key = os.environ['SECRET_KEY']
     app.run()
