@@ -51,6 +51,10 @@ def get_approved_participants(csvfile):
     participants = list(reader)
     approved_participants = [
         participant for participant in participants if participant['REGISTER STATUS'] == 'APPROVED']
+
+    approved_participants = sorted(
+        approved_participants, key=lambda participant: participant['NAME'].lower())
+
     return approved_participants
 
 
