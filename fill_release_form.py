@@ -11,7 +11,6 @@ def get_emergency_contact(contact):
     contact = contact.replace('\n', ' ')
     if len(contact) >= 35:
         contact = re.sub('[()-]', '', contact)
-
     return contact
 
 
@@ -41,39 +40,45 @@ def merge(overlay_canvas, template_path):
     return form
 
 
-def save(form, filename):
+def save(filename, content):
     with open(filename, 'wb') as f:
-        f.write(form.read())
+        f.write(content)
 
 
-def get_approved_participants(csv_file):
-    with open(csv_file) as csvfile:
-        reader = csv.DictReader(csvfile)
-        participants = list(reader)
-
+def get_approved_participants(csvfile):
+    reader = csv.DictReader(csvfile)
+    participants = list(reader)
     approved_participants = [
         participant for participant in participants if participant['REGISTER STATUS'] == 'APPROVED']
     return approved_participants
 
 
-def generate_pdfs(approved_participants, chunk_size):
+def generate_pdfs_data(release_pdf, approved_participants, filled_release_base, chunk_size):
+    data = {}
     for i in range(0, len(approved_participants), chunk_size):
         chunk_index = i / chunk_size + 1
         filled_release_pdf = filled_release_base + str(chunk_index) + ".pdf"
         participants = approved_participants[i:i + chunk_size]
         canvas_data = get_overlay_canvas(participants)
         form = merge(canvas_data, template_path=release_pdf)
-        save(form, filename=filled_release_pdf)
-        
-        
+        data[filled_release_pdf] = form.read()
+    return data
+
 participant_name_x = 65
 emergency_contact_x = 400
 y_start = 215
 y_increment = 17
 chunk_size = 10
 
-release_pdf = sys.argv[1]
-csv_file = sys.argv[2]
-filled_release_base = os.path.splitext(release_pdf)[0] + '_filled_'
-
-generate_pdfs(get_approved_participants(csv_file), chunk_size)
+def main():
+    release_pdf = sys.argv[1]
+    csv_file = sys.argv[2]
+    filled_release_base = os.path.splitext(release_pdf)[0] + '_filled_'
+    participants = get_approved_participants(open(csv_file))
+    file_contents = generate_pdfs_data(release_pdf,
+        participants, filled_release_base, chunk_size)
+    for filename, content in file_contents.items():
+        save(filename, content)
+    
+if __name__ == "__main__":
+    main()
