@@ -8,7 +8,7 @@ from reportlab.pdfgen import canvas
 
 
 def get_emergency_contact(contact):
-    contact = re.sub(',|;|wife|\n|Mother|Roomate|\.|:|sister|parents', '', contact)
+    contact = re.sub(',|;|[Ww]ife|\n|[Mm]other|[Rr]oomate|\.|:|[Ss]ister|[Pp]arents', '', contact)
     # contact = re.sub('-|\(|\)|,|;|wife|\n|Mother|Roomate|\.|:|sister|parents', '', contact)
     if len(contact) >= 35:
         return ""
