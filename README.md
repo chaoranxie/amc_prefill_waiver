@@ -24,4 +24,4 @@ waiver_filled_2.pdf (1 participant)
 
 ```
 ## Sample
-![Image of filed release form](sample.png)
+![Image of filed release form](static/sample.png)
