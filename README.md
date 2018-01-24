@@ -1,4 +1,4 @@
-# amc_autofill_release_form
+# prefill_amc_waiver
 Auto fill the amc release form with participants info
 ## Setup
 ```
@@ -10,13 +10,13 @@ click `Export to Tab Delimited` on the Roster page on regi
 ```
 ## Fill release form
 ```
-python fill_release_form.py release_form.pdf sample_participants.csv
+python prefill_waiver.py static/waiver.pdf static/sample_participants.csv
 ```
 
-## You should see following files in the directory
+## You should see following files in the static directory
 ```
-release_form_filled_1.pdf
-release_form_filled_2.pdf (10 participants per file)
+waiver_filled_1.pdf (10 participants)
+waiver_filled_2.pdf (1 participant)
 
 ```
 ## Sample
