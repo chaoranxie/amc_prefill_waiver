@@ -1,6 +1,24 @@
 <!doctype html>
-<title>Upload new File</title>
-<h1>Upload new File</h1>
+<title>Prefill AMC Waiver</title>
+<h1>Prefill AMC Waiver</h1>
+<form method=post enctype=multipart/form-data>
+    <p>
+        <input type=file name=file>
+        <input type=submit value="Prefill Waiver">
+</form>
+<p>
+    Download the roster file by clicking `Export to Tab Delimited` on the roster page for your event on REGI.
+</p>
+Or you can use this one
+<a href="{{ url_for('static', filename='sample_participants.csv') }}">sample_participants.csv</a>
+
+
+<p>
+    You can find the source code for this project
+    <a href="https://github.com/chaoranxie/amc_prefill_waiver">here</a>
+
+</p>
+
 
 {% with messages = get_flashed_messages() %} {% if messages %}
 <ul class=flashes>
@@ -9,9 +27,3 @@
     {% endfor %}
 </ul>
 {% endif %} {% endwith %}
-
-<form method=post enctype=multipart/form-data>
-    <p>
-        <input type=file name=file>
-        <input type=submit value=Upload>
-</form>
