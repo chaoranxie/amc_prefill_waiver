@@ -1,5 +1,9 @@
 # prefill_amc_waiver
-Auto fill the amc release form with participants info
+Autofill the amc waiver form with participants info
+
+## Web version if you dont want to run the code yourself
+https://prefill-amc-waiver.heychao.com/
+
 ## Setup
 ```
 pip install -r requirements.txt
