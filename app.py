@@ -45,9 +45,15 @@ def home():
                 file.create_system = 0
             zip.close()
             in_memory.seek(0)
-            return send_file(in_memory,
-                             attachment_filename='filled_waivers.zip',
-                             as_attachment=True)
+            response = send_file(
+                            in_memory,
+                            mimetype='application/zip',
+                            attachment_filename='filled_waivers.zip',
+                            as_attachment=True)
+            print(response)
+            print(response.mimetype)
+            return response
+
         else:
             flash('Invalid file')
             return redirect(request.url)
