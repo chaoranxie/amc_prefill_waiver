@@ -4,6 +4,7 @@ plugins:
   - serverless-wsgi
   - serverless-domain-manager
   - serverless-plugin-warmup
+  - serverless-apigw-binary
 
 custom:
   wsgi:
@@ -16,13 +17,12 @@ custom:
     basePath: ''
     stage: ${self:provider.stage}
     createRoute53Record: true
-  apigwBinary:
-    types:           #list of mime-types 
+  apigwBinary: 
+    types:
       - 'image/jpeg'
       - 'text/html'
       - 'application/zip'
       - 'multipart/form-data'
-
       
 package:
   exclude:
@@ -55,5 +55,5 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
-    # warmup: true
+    warmup: true
 
