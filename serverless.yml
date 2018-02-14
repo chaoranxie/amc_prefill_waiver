@@ -5,6 +5,7 @@ plugins:
   - serverless-domain-manager
   - serverless-plugin-warmup
   - serverless-apigw-binary
+  - serverless-plugin-aws-alerts
 
 custom:
   wsgi:
@@ -16,14 +17,31 @@ custom:
     domainName: amc-waiver.heychao.com
     basePath: ''
     stage: ${self:provider.stage}
-    createRoute53Record: true
+    createRoute53Record: false
   apigwBinary: 
     types:
       - 'image/jpeg'
       - 'text/html'
       - 'application/zip'
       - 'multipart/form-data'
-      
+  alerts:
+    stages:
+      - dev
+    dashboards: true
+    definitions:  # these defaults are merged with your definitions
+      functionThrottles:
+        period: 300 # override period
+      functionErrors:
+        period: 300 # override period
+    topics:
+      alarm: 
+        topic: ${self:service}-${opt:stage, self:provider.stage}-alerts-alarm
+        notifications:
+          - protocol: email
+            endpoint: chaoranxie@gmail.com
+    alarms:
+      - functionErrors
+      - functionThrottles      
 package:
   exclude:
     - node_modules/**
