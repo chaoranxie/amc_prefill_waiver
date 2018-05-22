@@ -18,7 +18,7 @@ custom:
     basePath: ''
     stage: ${self:provider.stage}
     createRoute53Record: false
-  apigwBinary: 
+  apigwBinary:
     types:
       - 'image/jpeg'
       - 'text/html'
@@ -34,14 +34,14 @@ custom:
       functionErrors:
         period: 300 # override period
     topics:
-      alarm: 
+      alarm:
         topic: ${self:service}-${opt:stage, self:provider.stage}-alerts-alarm
         notifications:
           - protocol: email
             endpoint: chaoranxie@gmail.com
     alarms:
       - functionErrors
-      - functionThrottles      
+      - functionThrottles
 package:
   exclude:
     - node_modules/**
@@ -66,7 +66,7 @@ provider:
           - Ref: AWS::Region
           - Ref: AWS::AccountId
           - function:${self:service}-${opt:stage, self:provider.stage}-*
-            
+
 functions:
   app:
     handler: wsgi.handler
@@ -74,4 +74,3 @@ functions:
       - http: ANY /
       - http: 'ANY {proxy+}'
     warmup: true
-
