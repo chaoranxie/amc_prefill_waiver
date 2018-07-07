@@ -2,7 +2,7 @@
 Autofill the amc waiver form with participants info
 
 ## Web version if you dont want to run the code yourself
-https://prefill-amc-waiver.heychao.com/
+https://amc-waiver.heychao.com/
 
 ## Setup
 ```
