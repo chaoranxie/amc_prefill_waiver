@@ -7,7 +7,7 @@ from flask import send_file
 from flask import render_template
 from flask import request, redirect, flash
 
-from prefill_waiver import generate_pdfs_data, chunk_size, get_approved_participants
+from prefill_waiver import generate_pdfs_data, chunk_size, get_approved_participants, get_all_participants, get_leaders
 
 app = Flask(__name__)
 app.secret_key = os.environ['SECRET_KEY']
@@ -34,9 +34,10 @@ def home():
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            participants = get_approved_participants(file.stream)
-            file_contents = generate_pdfs_data(
-                waiver_pdf='static/waiver.pdf', approved_participants=participants, filled_waiver_base="filled_waiver_", chunk_size=chunk_size)
+            participants = get_all_participants(file.stream)
+            leaders = get_leaders(participants)
+            participants = get_approved_participants(participants)
+            file_contents = generate_pdfs_data(waiver_pdf='static/waiver.pdf', approved_participants=participants, filled_waiver_base="filled_waiver_", chunk_size=chunk_size, leaders=leaders)
             in_memory = StringIO()
             zip = zipfile.ZipFile(in_memory, "a")
             for filename, content in file_contents.items():
@@ -45,10 +46,7 @@ def home():
                 file.create_system = 0
             zip.close()
             in_memory.seek(0)
-            response = send_file(
-                            in_memory,
-                            attachment_filename='filled_waivers.zip',
-                            as_attachment=True)
+            response = send_file(in_memory, attachment_filename='filled_waivers.zip', as_attachment=True)
             return response
 
         else:
