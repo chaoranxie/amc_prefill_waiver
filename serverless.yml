@@ -39,9 +39,6 @@ custom:
         notifications:
           - protocol: email
             endpoint: chaoranxie@gmail.com
-    alarms:
-      - functionErrors
-      - functionThrottles
 package:
   exclude:
     - node_modules/**
@@ -88,3 +85,5 @@ functions:
       - http: ANY /
       - http: 'ANY {proxy+}'
     warmup: true
+    alarms:
+      - functionErrors
