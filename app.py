@@ -1,13 +1,19 @@
-import zipfile
+import logging
 import os
+import zipfile
 from StringIO import StringIO
 
-from flask import Flask
-from flask import send_file
-from flask import render_template
-from flask import request, redirect, flash
+from aws_xray_sdk.core import patch_all, xray_recorder
+from flask import Flask, flash, redirect, render_template, request, send_file
 
-from prefill_waiver import generate_pdfs_data, chunk_size, get_approved_participants, get_all_participants, get_leaders
+from prefill_waiver import (chunk_size, generate_pdfs_data, get_all_participants, get_approved_participants,
+                            get_leaders)
+
+xray_recorder.configure(context_missing='LOG_ERROR')
+patch_all()
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 app = Flask(__name__)
 app.secret_key = os.environ['SECRET_KEY']
@@ -37,7 +43,12 @@ def home():
             participants = get_all_participants(file.stream)
             leaders = get_leaders(participants)
             participants = get_approved_participants(participants)
-            file_contents = generate_pdfs_data(waiver_pdf='static/waiver.pdf', approved_participants=participants, filled_waiver_base="filled_waiver_", chunk_size=chunk_size, leaders=leaders)
+            file_contents = generate_pdfs_data(
+                waiver_pdf='static/waiver.pdf',
+                approved_participants=participants,
+                filled_waiver_base="filled_waiver_",
+                chunk_size=chunk_size,
+                leaders=leaders)
             in_memory = StringIO()
             zip = zipfile.ZipFile(in_memory, "a")
             for filename, content in file_contents.items():
