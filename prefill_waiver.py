@@ -6,6 +6,7 @@ import os
 import pdfrw
 from reportlab.pdfgen import canvas
 from datetime import datetime
+import dateutil.parser as dparser
 
 
 def get_emergency_contact(contact):
@@ -56,7 +57,7 @@ def get_leaders(participants):
     leaders = [participant for participant in participants if participant['REGISTER STATUS'] in ['LEADER']]
 
     if leaders:
-        leaders = sorted(leaders, key=lambda participant: datetime.strptime(participant['REGISTER DATE'], "%Y-%m-%d %H:%M:%S"))
+        leaders = sorted(leaders, key=lambda participant: dparser.parse(participant['REGISTER DATE']))
     return leaders
 
 
@@ -68,7 +69,9 @@ def get_all_participants(csvfile):
 
 
 def get_approved_participants(participants):
-    approved_participants = [participant for participant in participants if participant['REGISTER STATUS'] == 'APPROVED']
+    approved_participants = [
+        participant for participant in participants if participant['REGISTER STATUS'] == 'APPROVED'
+    ]
     approved_participants = sorted(approved_participants, key=lambda participant: participant['NAME'].lower())
     return approved_participants
 
