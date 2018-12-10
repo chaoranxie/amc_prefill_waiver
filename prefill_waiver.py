@@ -10,11 +10,28 @@ import dateutil.parser as dparser
 
 
 def get_emergency_contact(contact):
-    contact = re.sub(',|;|[Ww]ife|\n|[Mm]other|[Mm]om|[Rr]oomate|\.|:|[Ss]ister|[Pp]arents', '', contact)
-    # contact = re.sub('-|\(|\)|,|;|wife|\n|Mother|Roomate|\.|:|sister|parents', '', contact)
+    contact = re.sub(',|;|[Ww]ife|\n|[Mm]other|[Mm]om|[Rr]oomate|\.|:|[Ss]ister|[Bb]rother|[Pp]arents', '', contact)
     if len(contact) >= 35:
         return ""
     return contact
+
+
+def draw_leaders(pdf, leaders, fontSize, initX, initY, diffY):
+    for leader in leaders:
+        text = "{} ({})".format(leader['NAME'], leader['REGISTER STATUS'])
+        pdf.setFontSize(fontSize)
+        pdf.drawString(x=initX, y=initY, text=text)
+        initY += diffY
+
+
+def add_leaders(pdf, leaders):
+    if not leaders:
+        return
+    if len(leaders) > 6:
+        return
+    fontSize, initX, initY, diffY = coordinates.get(len(leaders), two_columns)
+    draw_leaders(pdf, leaders[0:3], fontSize, initX, initY, diffY)
+    draw_leaders(pdf, leaders[3:], fontSize, initX + two_columns_x_diff, initY, diffY)
 
 
 def get_overlay_canvas(participants, leaders):
@@ -25,8 +42,7 @@ def get_overlay_canvas(participants, leaders):
         emergency_contact = get_emergency_contact(participant['EMERGENCY CONTACT'])
         pdf.drawString(x=participant_name_x, y=y, text=participant['NAME'])
         pdf.drawString(x=emergency_contact_x, y=y, text=emergency_contact)
-    if leaders:
-        pdf.drawString(x=leader_name_x, y=top_line_y, text=leaders[0]['NAME'])
+    add_leaders(pdf, leaders)
     pdf.drawString(x=chapter_x, y=top_line_y, text="Boston")
     pdf.drawString(x=activity_x, y=top_line_y, text="Hiking")
 
@@ -53,11 +69,15 @@ def save(filename, content):
 
 
 def get_leaders(participants):
-
-    leaders = [participant for participant in participants if participant['REGISTER STATUS'] in ['LEADER']]
-
-    if leaders:
-        leaders = sorted(leaders, key=lambda participant: dparser.parse(participant['REGISTER DATE']))
+    participants = sorted(participants, key=lambda participant: participant['REGISTER STATUS'], reverse=True)
+    leaders = []
+    for participant in participants:
+        if participant['REGISTER STATUS'] == 'LEADER':
+            participant['REGISTER STATUS'] = 'L'
+            leaders.append(participant)
+        if participant['REGISTER STATUS'] == 'CO-LEADER':
+            participant['REGISTER STATUS'] = 'CL'
+            leaders.append(participant)
     return leaders
 
 
@@ -110,6 +130,10 @@ top_line_y = 709
 leader_name_x = 170
 chapter_x = 320
 activity_x = 430
+
+coordinates = {1: [12, 170, 709, 0], 2: [10, 170, 715, -10], 3: [9, 170, 720, -8]}
+two_columns = [6, 170, 720, -8]
+two_columns_x_diff = 52
 
 if __name__ == "__main__":
     main()
