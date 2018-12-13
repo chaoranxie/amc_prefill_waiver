@@ -6,6 +6,7 @@ click==6.7
 docutils==0.14
 enum34==1.1.6
 Flask==0.12.4
+Flask-Cors==3.0.7
 future==0.17.1
 gunicorn==19.7.1
 idna==2.7

@@ -13,6 +13,8 @@ custom:
     app: app.app
     packRequirements: false
   # - serverless-python-requirements
+  pythonRequirements:
+    dockerizePip: true
   customDomain:
     domainName: amc-waiver.heychao.com
     basePath: ''
@@ -83,7 +85,11 @@ functions:
     handler: wsgi.handler
     events:
       - http: ANY /
+        cors: true # <-- CORS!
+
       - http: 'ANY {proxy+}'
+        cors: true # <-- CORS!
+
     warmup: true
     alarms:
       - functionErrors
