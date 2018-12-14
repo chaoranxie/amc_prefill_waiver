@@ -1,22 +1,21 @@
 import csv
 import io
+import os
 import re
 import sys
-import os
+
 import pdfrw
 from reportlab.pdfgen import canvas
-from datetime import datetime
-import dateutil.parser as dparser
 
 
 def get_emergency_contact(contact):
     # remove relationship
-    contact = re.sub('[Ww]ife|[Mm]other|[Mm]om|[Ff]ather|[Dd]ad|[Rr]oomate|[Ss]ister|[Bb]rother|[Pp]arents', '',
+    contact = re.sub(r'[Ww]ife|[Mm]other|[Mm]om|[Ff]ather|[Dd]ad|[Rr]oomate|[Ss]ister|[Bb]rother|[Pp]arents', '',
                      contact)
     #  remove misc
-    contact = re.sub(',|;|\n|\.|:|\(\)', '', contact)
+    contact = re.sub(r',|;|\n|\.|:|\(\)', '', contact)
     # Reduce extra space
-    contact = re.sub('\s+', ' ', contact).strip()
+    contact = re.sub(r'\s+', ' ', contact).strip()
     if len(contact) >= 35:
         return ""
     return contact
@@ -124,7 +123,7 @@ def main():
     participants = get_all_participants(open(csv_file))
     leaders = get_leaders(participants)
     participants = get_approved_participants(participants)
-    file_contents = generate_pdfs_data(waiver_pdf, participants, filled_waiver_base, chunk_size, leaders, date)
+    file_contents = generate_pdfs_data(waiver_pdf, participants, filled_waiver_base, init_chunk_size, leaders, date)
     for filename, content in file_contents.items():
         save(filename, content)
 
@@ -133,7 +132,7 @@ participant_name_x = 65
 emergency_contact_x = 400
 y_start = 215
 y_increment = 17
-chunk_size = 10
+init_chunk_size = 10
 
 top_line_y = 709
 leader_name_x = 170
