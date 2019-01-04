@@ -10,8 +10,9 @@ from reportlab.pdfgen import canvas
 
 def get_emergency_contact(contact):
     # remove relationship
-    contact = re.sub(r'[Ww]ife|[Mm]other|[Mm]om|[Ff]ather|[Dd]ad|[Rr]oomate|[Ss]ister|[Bb]rother|[Pp]arents', '',
-                     contact)
+    contact = re.sub(
+        r'[Ww]ife|[Mm]other|[Mm]om|[Ff]ather|[Dd]ad|[Rr]oomate|[Ss]ister|[Bb]rother|[Pp]arents|[Cc]ousin|[Cc]ell|[Pp]hone',
+        '', contact)
     #  remove misc
     contact = re.sub(r',|;|\n|\.|:|\(\)', '', contact)
     # Reduce extra space
@@ -39,7 +40,7 @@ def add_leaders(pdf, leaders):
     draw_leaders(pdf, leaders[3:], fontSize, initX + two_columns_x_diff, initY, diffY)
 
 
-def get_overlay_canvas(participants, leaders, date):
+def get_overlay_canvas(participants, leaders, date, endDate):
     data = io.BytesIO()
     pdf = canvas.Canvas(data)
     for idx, participant in enumerate(participants):
@@ -52,7 +53,12 @@ def get_overlay_canvas(participants, leaders, date):
     pdf.drawString(x=chapter_x, y=top_line_y, text="Boston")
     pdf.drawString(x=activity_x, y=top_line_y, text="Hiking")
     if date:
-        pdf.drawString(x=date_x, y=top_line_y, text=date)
+        if endDate:
+            pdf.drawString(x=date_x, y=top_line_y + 5, text=date + " -")
+            pdf.drawString(x=date_x, y=top_line_y - 5, text=endDate)
+        else:
+            pdf.drawString(x=date_x, y=top_line_y, text=date)
+
     pdf.save()
     data.seek(0)
     return data
@@ -103,13 +109,13 @@ def get_approved_participants(participants):
     return approved_participants
 
 
-def generate_pdfs_data(waiver_pdf, approved_participants, filled_waiver_base, chunk_size, leaders, date):
+def generate_pdfs_data(waiver_pdf, approved_participants, filled_waiver_base, chunk_size, leaders, date, endDate):
     data = {}
     for i in range(0, len(approved_participants), chunk_size):
         chunk_index = i / chunk_size + 1
         filled_waiver_pdf = filled_waiver_base + str(chunk_index) + ".pdf"
         participants = approved_participants[i:i + chunk_size]
-        canvas_data = get_overlay_canvas(participants, leaders, date)
+        canvas_data = get_overlay_canvas(participants, leaders, date, endDate)
         form = merge(canvas_data, template_path=waiver_pdf)
         data[filled_waiver_pdf] = form.read()
     return data
@@ -119,11 +125,14 @@ def main():
     waiver_pdf = sys.argv[1]
     csv_file = sys.argv[2]
     date = sys.argv[3] if len(sys.argv) >= 4 else None
+    endDate = sys.argv[4] if len(sys.argv) >= 5 else None
+
     filled_waiver_base = os.path.splitext(waiver_pdf)[0] + '_filled_'
     participants = get_all_participants(open(csv_file))
     leaders = get_leaders(participants)
     participants = get_approved_participants(participants)
-    file_contents = generate_pdfs_data(waiver_pdf, participants, filled_waiver_base, init_chunk_size, leaders, date)
+    file_contents = generate_pdfs_data(waiver_pdf, participants, filled_waiver_base, init_chunk_size, leaders, date,
+                                       endDate)
     for filename, content in file_contents.items():
         save(filename, content)
 

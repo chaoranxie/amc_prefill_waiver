@@ -32,10 +32,11 @@ def allowed_file(filename):
 def api():
     file_stream = StringIO(request.json['csv'].encode("utf-8", 'ignore').decode())
     date = request.json['date']
-    return get_zip_from_stream(file_stream, date)
+    endDate = request.json.get('endDate')
+    return get_zip_from_stream(file_stream, date, endDate)
 
 
-def get_zip_from_stream(file_stream, date):
+def get_zip_from_stream(file_stream, date, endDate):
     participants = get_all_participants(file_stream)
     leaders = get_leaders(participants)
     participants = get_approved_participants(participants)
@@ -45,7 +46,8 @@ def get_zip_from_stream(file_stream, date):
         filled_waiver_base="filled_waiver_",
         chunk_size=init_chunk_size,
         leaders=leaders,
-        date=date)
+        date=date,
+        endDate=endDate)
     in_memory = BytesIO()
     zip_file = zipfile.ZipFile(in_memory, "a")
     for filename, content in file_contents.items():
@@ -73,7 +75,7 @@ def home():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             file_stream = StringIO(file.stream.read().decode("utf-8"))
-            return get_zip_from_stream(file_stream=file_stream, date=None)
+            return get_zip_from_stream(file_stream=file_stream, date=None, endDate=None)
         else:
             flash('Invalid file')
             return redirect(request.url)
