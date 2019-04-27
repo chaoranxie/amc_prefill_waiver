@@ -13,8 +13,10 @@ from prefill_waiver import (init_chunk_size, generate_pdfs_data, get_all_partici
 xray_recorder.configure(context_missing='LOG_ERROR')
 patch_all()
 
+LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()
+logging.getLogger().setLevel(LOGLEVEL)
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 app = Flask(__name__)
 app.secret_key = os.environ['SECRET_KEY']
@@ -22,10 +24,21 @@ CORS(app)
 
 ALLOWED_EXTENSIONS = set(['csv'])
 
+container_id = None
+
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.before_request
+def before_req():
+    global container_id  # pylint: disable=W0603
+    if container_id is None:
+        context = request.environ['serverless.context']
+        container_id = context.aws_request_id
+    logger.info("container_id: %s", container_id)
 
 
 @app.route('/api', methods=['POST'])
