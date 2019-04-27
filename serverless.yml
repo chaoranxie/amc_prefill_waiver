@@ -6,19 +6,15 @@ plugins:
   - serverless-plugin-warmup
   - serverless-apigw-binary
   - serverless-plugin-aws-alerts
-  - serverless-plugin-tracing
-
 custom:
   wsgi:
     app: app.app
     packRequirements: false
   # - serverless-python-requirements
   pythonRequirements:
-    dockerizePip: true
+    dockerizePip: non-linux
   customDomain:
     domainName: amc-waiver.heychao.com
-    basePath: ''
-    stage: ${self:provider.stage}
     createRoute53Record: false
   apigwBinary:
     types:
@@ -27,35 +23,27 @@ custom:
       - 'application/zip'
       - 'multipart/form-data'
   alerts:
-    stages:
-      - dev
-    dashboards: true
     definitions:  # these defaults are merged with your definitions
-      functionThrottles:
-        period: 300 # override period
       functionErrors:
         period: 300 # override period
+    alarms:
+      - functionErrors
     topics:
       alarm:
-        topic: ${self:service}-${opt:stage, self:provider.stage}-alerts-alarm
-        notifications:
-          - protocol: email
-            endpoint: chaoranxie@gmail.com
+        topic: ${env:AWS_LAMBDA_SNS_TOPIC}
+
 package:
   exclude:
     - node_modules/**
     - venv/**
+    - __pycache__/**
+
 provider:
   name: aws
   runtime: python3.6
-  stage: dev
-  region: us-east-1
   memorySize: 128
-  pythonRequirements:
-    dockerizePip: true
   environment:
     SECRET_KEY: ${env:SECRET_KEY}
-    API_GATEWAY_BASE_PATH: ${self:custom.customDomain.basePath}
   iamRoleStatements:
     # - serverless-plugin-warmup
     - Effect: 'Allow'
@@ -68,28 +56,16 @@ provider:
           - Ref: AWS::Region
           - Ref: AWS::AccountId
           - function:${self:service}-${opt:stage, self:provider.stage}-*
-
-    # - serverless-plugin-tracing
-    - Effect: "Allow" # xray permissions (required) 
-      Action:
-        - "xray:PutTraceSegments"
-        - "xray:PutTelemetryRecords"
-      Resource:
-        - "*"
-  # - serverless-plugin-tracing
-  # Enable XRay tracing 
-  tracing: true 
+  tracing:
+    apiGateway: true
+    lambda: true
 
 functions:
   web:
-    handler: wsgi.handler
+    handler: wsgi_handler.handler
     events:
       - http: ANY /
         cors: true # <-- CORS!
-
       - http: 'ANY {proxy+}'
         cors: true # <-- CORS!
-
     warmup: true
-    alarms:
-      - functionErrors
