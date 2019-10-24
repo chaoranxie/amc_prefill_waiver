@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/chaoranxie/amc_autofill_release_form#readme",
   "devDependencies": {
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "serverless": "^1.41.1",
     "serverless-apigw-binary": "^0.4.4",
     "serverless-domain-manager": "^2.3.0",
