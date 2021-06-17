@@ -7,6 +7,9 @@ plugins:
   - serverless-apigw-binary
   - serverless-plugin-aws-alerts
 custom:
+  warmup:
+    default:
+      enabled: true # Whether to warm up functions by default or not
   wsgi:
     app: app.app
     packRequirements: false
@@ -44,18 +47,8 @@ provider:
   memorySize: 128
   environment:
     SECRET_KEY: ${env:SECRET_KEY}
-  iamRoleStatements:
-    # - serverless-plugin-warmup
-    - Effect: 'Allow'
-      Action:
-        - 'lambda:InvokeFunction'
-      Resource:
-      - Fn::Join:
-        - ':'
-        - - arn:aws:lambda
-          - Ref: AWS::Region
-          - Ref: AWS::AccountId
-          - function:${self:service}-${opt:stage, self:provider.stage}-*
+  httpApi:
+    cors: true
   tracing:
     apiGateway: true
     lambda: true
@@ -65,7 +58,4 @@ functions:
     handler: wsgi_handler.handler
     events:
       - http: ANY /
-        cors: true # <-- CORS!
       - http: 'ANY {proxy+}'
-        cors: true # <-- CORS!
-    warmup: true
