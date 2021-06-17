@@ -140,7 +140,7 @@ def main():
 participant_name_x = 65
 emergency_contact_x = 400
 y_start = 215
-y_increment = 17
+y_increment = 16.5
 init_chunk_size = 10
 
 top_line_y = 709
