@@ -35,10 +35,10 @@ def allowed_file(filename):
 @app.before_request
 def before_req():
     global container_id  # pylint: disable=W0603
-    if container_id is None:
-        context = request.environ['serverless.context']
-        container_id = context.aws_request_id
-    logger.info("container_id: %s", container_id)
+    # if container_id is None:
+    #     context = request.environ['serverless.context']
+    #     container_id = context.aws_request_id
+    # logger.info("container_id: %s", container_id)
 
 
 @app.route('/api', methods=['POST'])
@@ -46,10 +46,13 @@ def api():
     file_stream = StringIO(request.json['csv'].encode("utf-8", 'ignore').decode())
     date = request.json['date']
     endDate = request.json.get('endDate')
-    return get_zip_from_stream(file_stream, date, endDate)
+    chapter = request.json.get('chapter')
+    activity = request.json.get('activity')
+
+    return get_zip_from_stream(file_stream, date, endDate, chapter, activity)
 
 
-def get_zip_from_stream(file_stream, date, endDate):
+def get_zip_from_stream(file_stream, date, endDate, chapter, activity):
     participants = get_all_participants(file_stream)
     leaders = get_leaders(participants)
     participants = get_approved_participants(participants)
@@ -60,7 +63,9 @@ def get_zip_from_stream(file_stream, date, endDate):
         chunk_size=init_chunk_size,
         leaders=leaders,
         date=date,
-        endDate=endDate)
+        endDate=endDate,
+        chapter=chapter,
+        activity=activity)
     in_memory = BytesIO()
     zip_file = zipfile.ZipFile(in_memory, "a")
     for filename, content in file_contents.items():
@@ -69,7 +74,7 @@ def get_zip_from_stream(file_stream, date, endDate):
         file.create_system = 0
     zip_file.close()
     in_memory.seek(0)
-    response = send_file(in_memory, attachment_filename='filled_waivers.zip', as_attachment=True)
+    response = send_file(in_memory, download_name='filled_waivers.zip', as_attachment=True)
     return response
 
 
@@ -88,7 +93,7 @@ def home():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             file_stream = StringIO(file.stream.read().decode("utf-8"))
-            return get_zip_from_stream(file_stream=file_stream, date=None, endDate=None)
+            return get_zip_from_stream(file_stream=file_stream, date=request.form.get('date'), endDate=request.form.get('endDate'), chapter=request.form.get('chapter'), activity=request.form.get('activity'))
         else:
             flash('Invalid file')
             return redirect(request.url)

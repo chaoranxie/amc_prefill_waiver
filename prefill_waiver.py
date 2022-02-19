@@ -40,7 +40,7 @@ def add_leaders(pdf, leaders):
     draw_leaders(pdf, leaders[3:], fontSize, initX + two_columns_x_diff, initY, diffY)
 
 
-def get_overlay_canvas(participants, leaders, date, endDate):
+def get_overlay_canvas(participants, leaders, date, endDate, chapter, activity):
     data = io.BytesIO()
     pdf = canvas.Canvas(data)
     for idx, participant in enumerate(participants):
@@ -50,8 +50,8 @@ def get_overlay_canvas(participants, leaders, date, endDate):
         pdf.drawString(x=emergency_contact_x, y=y, text=emergency_contact)
     add_leaders(pdf, leaders)
     pdf.setFont('Helvetica-Bold', 12)
-    pdf.drawString(x=chapter_x, y=top_line_y, text="Boston")
-    pdf.drawString(x=activity_x, y=top_line_y, text="Hiking")
+    pdf.drawString(x=chapter_x, y=top_line_y, text=chapter or "Boston")
+    pdf.drawString(x=activity_x, y=top_line_y, text=activity or "Hiking")
     if date:
         if endDate:
             pdf.drawString(x=date_x, y=top_line_y + 5, text=date + " -")
@@ -109,13 +109,13 @@ def get_approved_participants(participants):
     return approved_participants
 
 
-def generate_pdfs_data(waiver_pdf, approved_participants, filled_waiver_base, chunk_size, leaders, date, endDate):
+def generate_pdfs_data(waiver_pdf, approved_participants, filled_waiver_base, chunk_size, leaders, date, endDate, chapter, activity):
     data = {}
     for i in range(0, len(approved_participants), chunk_size):
         chunk_index = i / chunk_size + 1
         filled_waiver_pdf = filled_waiver_base + str(chunk_index) + ".pdf"
         participants = approved_participants[i:i + chunk_size]
-        canvas_data = get_overlay_canvas(participants, leaders, date, endDate)
+        canvas_data = get_overlay_canvas(participants, leaders, date, endDate, chapter, activity)
         form = merge(canvas_data, template_path=waiver_pdf)
         data[filled_waiver_pdf] = form.read()
     return data
@@ -126,13 +126,14 @@ def main():
     csv_file = sys.argv[2]
     date = sys.argv[3] if len(sys.argv) >= 4 else None
     endDate = sys.argv[4] if len(sys.argv) >= 5 else None
-
+    chapter = sys.argv[4] if len(sys.argv) >= 6 else None
+    activity = sys.argv[4] if len(sys.argv) >= 7 else None
     filled_waiver_base = os.path.splitext(waiver_pdf)[0] + '_filled_'
     participants = get_all_participants(open(csv_file))
     leaders = get_leaders(participants)
     participants = get_approved_participants(participants)
     file_contents = generate_pdfs_data(waiver_pdf, participants, filled_waiver_base, init_chunk_size, leaders, date,
-                                       endDate)
+                                       endDate, chapter, activity)
     for filename, content in file_contents.items():
         save(filename, content)
 
