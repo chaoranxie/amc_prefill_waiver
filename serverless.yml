@@ -3,13 +3,13 @@ plugins:
   - serverless-python-requirements
   - serverless-wsgi
   - serverless-domain-manager
-  - serverless-plugin-warmup
+  # - serverless-plugin-warmup
   - serverless-apigw-binary
   - serverless-plugin-aws-alerts
 custom:
-  warmup:
-    default:
-      enabled: true # Whether to warm up functions by default or not
+  # warmup:
+  #   default:
+  #     enabled: true # Whether to warm up functions by default or not
   wsgi:
     app: app.app
     packRequirements: false
@@ -43,7 +43,7 @@ package:
 
 provider:
   name: aws
-  runtime: python3.6
+  runtime: python3.11
   memorySize: 128
   environment:
     SECRET_KEY: ${env:SECRET_KEY}
@@ -58,4 +58,4 @@ functions:
     handler: wsgi_handler.handler
     events:
       - http: ANY /
-      - http: 'ANY {proxy+}'
+      - http: ANY /{proxy+}

@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+aws-xray-sdk = "*"
+flask-cors = "*"
+pdfrw = "*"
+reportlab = "*"
+werkzeug = "2.3.7"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
