@@ -45,19 +45,19 @@ def get_overlay_canvas(participants, leaders, date, endDate, chapter, activity):
     pdf = canvas.Canvas(data)
     for idx, participant in enumerate(participants):
         y = y_start - y_increment * idx
-        emergency_contact = get_emergency_contact(participant['EMERGENCY CONTACT'])
+        # emergency_contact = get_emergency_contact(participant['EMERGENCY CONTACT'])
         pdf.drawString(x=participant_name_x, y=y, text=participant['NAME'])
-        pdf.drawString(x=emergency_contact_x, y=y, text=emergency_contact)
-    add_leaders(pdf, leaders)
-    pdf.setFont('Helvetica-Bold', 12)
-    pdf.drawString(x=chapter_x, y=top_line_y, text=chapter or "Boston")
-    pdf.drawString(x=activity_x, y=top_line_y, text=activity or "Hiking")
-    if date:
-        if endDate:
-            pdf.drawString(x=date_x, y=top_line_y + 5, text=date + " -")
-            pdf.drawString(x=date_x, y=top_line_y - 5, text=endDate)
-        else:
-            pdf.drawString(x=date_x, y=top_line_y, text=date)
+        # pdf.drawString(x=emergency_contact_x, y=y, text=emergency_contact)
+    # add_leaders(pdf, leaders)
+    # pdf.setFont('Helvetica-Bold', 12)
+    # pdf.drawString(x=chapter_x, y=top_line_y, text=chapter or "Boston")
+    # pdf.drawString(x=activity_x, y=top_line_y, text=activity or "Hiking")
+    # if date:
+    #     if endDate:
+    #         pdf.drawString(x=date_x, y=top_line_y + 5, text=date + " -")
+    #         pdf.drawString(x=date_x, y=top_line_y - 5, text=endDate)
+    #     else:
+    #         pdf.drawString(x=date_x, y=top_line_y, text=date)
 
     pdf.save()
     data.seek(0)
@@ -126,8 +126,8 @@ def main():
     csv_file = sys.argv[2]
     date = sys.argv[3] if len(sys.argv) >= 4 else None
     endDate = sys.argv[4] if len(sys.argv) >= 5 else None
-    chapter = sys.argv[5] if len(sys.argv) >= 6 else None
-    activity = sys.argv[6] if len(sys.argv) >= 7 else None
+    chapter = sys.argv[4] if len(sys.argv) >= 6 else None
+    activity = sys.argv[4] if len(sys.argv) >= 7 else None
     filled_waiver_base = os.path.splitext(waiver_pdf)[0] + '_filled_'
     participants = get_all_participants(open(csv_file))
     leaders = get_leaders(participants)
@@ -138,11 +138,11 @@ def main():
         save(filename, content)
 
 
-participant_name_x = 65
+participant_name_x = 160
 emergency_contact_x = 400
-y_start = 215
-y_increment = 16.5
-init_chunk_size = 10
+y_start = 568
+y_increment = 60
+init_chunk_size = 9
 
 top_line_y = 709
 leader_name_x = 170
