@@ -3,16 +3,15 @@ plugins:
   - serverless-python-requirements
   - serverless-wsgi
   - serverless-domain-manager
-  # - serverless-plugin-warmup
+  - serverless-plugin-warmup
   - serverless-apigw-binary
   - serverless-plugin-aws-alerts
 custom:
-  # warmup:
-  #   default:
-  #     enabled: true # Whether to warm up functions by default or not
+  warmup:
+    default:
+      enabled: true # Whether to warm up functions by default or not
   wsgi:
     app: app.app
-    packRequirements: false
   # - serverless-python-requirements
   pythonRequirements:
     dockerizePip: non-linux
@@ -36,10 +35,10 @@ custom:
         topic: ${env:AWS_LAMBDA_SNS_TOPIC}
 
 package:
-  exclude:
-    - node_modules/**
-    - venv/**
-    - __pycache__/**
+  patterns:
+    - "!node_modules/**"
+    - "!venv/**"
+    - "!__pycache__/**"
 
 provider:
   name: aws

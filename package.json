@@ -5,9 +5,9 @@
   "devDependencies": {
     "serverless": "^3.35.2",
     "serverless-apigw-binary": "^0.4.4",
-    "serverless-domain-manager": "^5.1.0",
-    "serverless-plugin-aws-alerts": "^1.7.3",
-    "serverless-plugin-warmup": "^5.3.1",
+    "serverless-domain-manager": "^7.1.2",
+    "serverless-plugin-aws-alerts": "^1.7.5",
+    "serverless-plugin-warmup": "^8.2.1",
     "serverless-python-requirements": "github:serverless/serverless-python-requirements#c1f5ca114de815ca19ad213a79e250b5b81f29b3",
     "serverless-wsgi": "^3.0.2"
   }
