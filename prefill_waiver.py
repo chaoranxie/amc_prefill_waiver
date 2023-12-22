@@ -3,6 +3,7 @@ import io
 import os
 import re
 import sys
+import codecs
 
 import pdfrw
 from reportlab.pdfgen import canvas
@@ -122,6 +123,7 @@ def generate_pdfs_data(waiver_pdf, approved_participants, filled_waiver_base, ch
 
 
 def main():
+
     waiver_pdf = sys.argv[1]
     csv_file = sys.argv[2]
     date = sys.argv[3] if len(sys.argv) >= 4 else None
@@ -129,7 +131,7 @@ def main():
     chapter = sys.argv[5] if len(sys.argv) >= 6 else None
     activity = sys.argv[6] if len(sys.argv) >= 7 else None
     filled_waiver_base = os.path.splitext(waiver_pdf)[0] + '_filled_'
-    participants = get_all_participants(open(csv_file))
+    participants = get_all_participants(codecs.open(csv_file, 'r', encoding='utf-8',errors='ignore'))
     leaders = get_leaders(participants)
     participants = get_approved_participants(participants)
     file_contents = generate_pdfs_data(waiver_pdf, participants, filled_waiver_base, init_chunk_size, leaders, date,
